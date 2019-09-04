@@ -4,20 +4,8 @@
  * algorithms for each pipeline
  */
 
-function invertBrightness(picture) {
-    throw new Error('Unimplemented');
-}
-
-function invertHorizontally(picture) {
-    throw new Error('Unimplemented');
-}
-
-function averagePixels(picture) {
-    throw new Error('Unimplemented');
-}
-
 function runAllAlgorithms(picture) {
     throw new Error('Unimplemented');
 }
 
-module.exports = {invertBrightness, invertHorizontally, averagePixels, runAllAlgorithms};
+module.exports = { runAllAlgorithms };
