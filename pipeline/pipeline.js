@@ -4,12 +4,8 @@
  * algorithms for each pipeline
  */
 
-const orchestrator = require('./orchestrator');
-orchestrator.init();
-orchestrator.registerAlgorithm('invertBrightness', picture => picture.map(row => row.map(pixel => 255 - pixel)));
-
 function invertBrightness(picture) {
-    return orchestrator.runPipeline(picture, ['invertBrightness']);
+    throw new Error('Unimplemented');
 }
 
 function invertHorizontally(picture) {
