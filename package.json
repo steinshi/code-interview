@@ -19,5 +19,8 @@
   "homepage": "https://github.com/bookmd/code-interview#readme",
   "devDependencies": {
     "mocha": "^6.2.0"
+  },
+  "dependencies": {
+    "uuid": "^3.3.3"
   }
 }

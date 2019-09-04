@@ -4,13 +4,13 @@ function subscribe(channel, handler) {
     if (!handlers[channel]) {
         handlers[channel] = [];
     }
-    handlers.channel.push(handler);
+    handlers[channel].push(handler);
 }
 
 
 function publish(channel, payload, metadata) {
     if (handlers[channel]) {
-        handlers.channel.forEach(handler => handler(payload, metadata))
+        handlers[channel].forEach(handler => handler(payload, metadata))
     }
 }
 
