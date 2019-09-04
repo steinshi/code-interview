@@ -1,13 +1,13 @@
 const assert = require('assert');
-const {invertColor} = require('../picturePipeline/algorithms/inversion');
+const pipeline = require('../pipeline/pipeline');
 
-describe('# algorithm tests', () => {
-    it('# inversion test for 2x2 picture', () => {
-        const pictureBefore = [[1,200],[100,50]];
-        const pictureAfter = [[254, 55], [155, 205]];
-
-        const result = invertColor(pictureBefore); //TODO: COMPLETE ME
-
-        assert.deepEqual(result, pictureAfter);
-    });
-});
+describe('# pipeline tests', () => {
+        describe('# invert brightness tests', () => {
+            it('# inverts brightness for even-dimesion square picture', () => {
+                const before = [[100,23],[230,1]];
+                const expected = [[155,232],[25,254]];
+                return pipeline.invertBrightness(before).then(after => assert.deepStrictEqual(after, expected))
+            })
+        });
+    }
+);
