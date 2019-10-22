@@ -73,7 +73,7 @@ describe(`# Test part A of the coding interview`, () => {
             const app = express();
             const port = config.SUBSCRIBER_PORT;
             app.use(bodyParser.json());
-            app.route('/newAppointment').post(request => handler(request.body));
+            app.route('/newAppointment').post((request, response) => handler ? handler(request.body) : response.status(200).send());
             server = app.listen(port);
             return request({
                 method: 'POST',
