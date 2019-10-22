@@ -1,66 +1,86 @@
 [
   {
-    "name": "Roland Deschain",
-    "score": 10.0,
-    "specialties": ["Neurology, Cardiologist"],
-    "availableDates": [
-      {
-        "gte": "2019-10-20T13:00+02",
-        "lte": "2019-10-20T16:00+02"
-      },
-      {
-        "gte": "2019-10-21T10:00+04",
-        "lte": "2019-10-21T16:00+02"
-      }
-    ]
-  },
-  {
     "name": "Jake Chambers",
     "score": 8.9,
-    "specialties": ["Primary Care, Cardiologist"],
+    "specialties": [
+      "Primary Care",
+      "Cardiologist"
+    ],
     "availableDates": [
       {
-        "gte": "2019-10-21T10:00+04",
-        "lte": "2019-10-21T16:00+02"
+        "gte": "2019-10-21T10:00+0400",
+        "lte": "2019-10-21T16:00+0200"
       },
       {
-        "gte": "2020-01-20T13:00+02",
-        "lte": "2020-01-20T16:00+02"
+        "gte": "2020-01-20T13:00+0200",
+        "lte": "2020-01-20T16:00+0200"
       }
     ]
   },
   {
-    "name": "Suzanna Dean",
-    "score": 9.2,
-    "specialties": ["Neuropathy"],
+    "name": "Roland Deschain",
+    "score": 10.0,
+    "specialties": [
+      "Neurology",
+      "Cardiologist"
+    ],
     "availableDates": [
       {
-        "gte": "2019-10-20T13:00+02",
-        "lte": "2019-10-20T16:00+02"
+        "gte": "2019-10-20T13:00+0200",
+        "lte": "2019-10-20T16:00+0200"
+      },
+      {
+        "gte": "2019-10-21T10:00+0400",
+        "lte": "2019-10-21T16:00+0200"
+      }
+    ]
+  },
+  {
+    "name": "Susannah Dean",
+    "score": 9.2,
+    "specialties": [
+      "Neuropathy"
+    ],
+    "availableDates": [
+      {
+        "gte": "2019-10-20T13:00+0200",
+        "lte": "2019-10-20T16:00+0200"
       }
     ]
   },
   {
     "name": "Eddie Dean",
     "score": 8.3,
-    "specialties": ["Pain Assistance, Intern"],
+    "specialties": [
+      "Pain Assistance",
+      "Internist"
+    ],
     "availableDates": []
   },
   {
     "name": "Oy Midworld",
     "score": 9.5,
-    "specialties": ["Neonatal"],
+    "specialties": [
+      "Neonatal"
+    ],
     "availableDates": [
       {
-        "gte": "1995-10-20T08:00+01",
-        "lte": "2021-10-20T23:00-09"
+        "gte": "1995-10-20T08:00+0100",
+        "lte": "2021-10-20T23:00-0900"
       }
     ]
   },
   {
     "name": "Randall Flagg",
     "score": 0.1,
-    "specialties": ["Physiologist"],
-    "availableDates": []
+    "specialties": [
+      "Physiologist"
+    ],
+    "availableDates": [
+      {
+        "gte": "2027-04-29T08:00+0100",
+        "lte": "2027-04-29T08:00+0100"
+      }
+    ]
   }
 ]

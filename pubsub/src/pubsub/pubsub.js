@@ -14,6 +14,7 @@ function publish(channel, payload, metadata) {
         return Promise.all(
             listeners[channel].map(
                 listener => publisher.sendToListener(listener, payload, metadata)
+                    .then(() => console.log(`Published message to [${listener}] on channel [${channel}]`))
                     .catch(err => console.error(`Failed to send message to listener [${listener}] on channel [${channel}]`, err))
             )
         )
