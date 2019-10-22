@@ -1,0 +1,26 @@
+{
+  "name": "code-interview",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "pubsub": "node ../pubsub/index.js",
+    "test": "mocha tests/test-a.spec.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bookmd/code-interview.git"
+  },
+  "author": "Vim",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bookmd/code-interview/issues"
+  },
+  "homepage": "https://github.com/bookmd/code-interview#readme",
+  "devDependencies": {
+    "mocha": "^6.2.0",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4"
+  },
+  "dependencies": {}
+}

@@ -1,0 +1,66 @@
+[
+  {
+    "name": "Roland Deschain",
+    "score": 10.0,
+    "specialties": ["Neurology, Cardiologist"],
+    "availableDates": [
+      {
+        "gte": "2019-10-20T13:00+02",
+        "lte": "2019-10-20T16:00+02"
+      },
+      {
+        "gte": "2019-10-21T10:00+04",
+        "lte": "2019-10-21T16:00+02"
+      }
+    ]
+  },
+  {
+    "name": "Jake Chambers",
+    "score": 8.9,
+    "specialties": ["Primary Care, Cardiologist"],
+    "availableDates": [
+      {
+        "gte": "2019-10-21T10:00+04",
+        "lte": "2019-10-21T16:00+02"
+      },
+      {
+        "gte": "2020-01-20T13:00+02",
+        "lte": "2020-01-20T16:00+02"
+      }
+    ]
+  },
+  {
+    "name": "Suzanna Dean",
+    "score": 9.2,
+    "specialties": ["Neuropathy"],
+    "availableDates": [
+      {
+        "gte": "2019-10-20T13:00+02",
+        "lte": "2019-10-20T16:00+02"
+      }
+    ]
+  },
+  {
+    "name": "Eddie Dean",
+    "score": 8.3,
+    "specialties": ["Pain Assistance, Intern"],
+    "availableDates": []
+  },
+  {
+    "name": "Oy Midworld",
+    "score": 9.5,
+    "specialties": ["Neonatal"],
+    "availableDates": [
+      {
+        "gte": "1995-10-20T08:00+01",
+        "lte": "2021-10-20T23:00-09"
+      }
+    ]
+  },
+  {
+    "name": "Randall Flagg",
+    "score": 0.1,
+    "specialties": ["Physiologist"],
+    "availableDates": []
+  }
+]
