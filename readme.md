@@ -103,8 +103,8 @@ Use the mock info under `/providers/providers.json` as your data source, but wri
 	`BODY: { “name”: string, “date”: date }`
   * The server should validate that such an availability exists. If it doesn’t, the server should return `400 (BAD REQUEST)`.
   * If such an availability does exist, the server should:
-  * Use the pubsub system to publish a new message to a channel called ‘newAppointments’. The message should contain a payload: `{“name”: string, “date”: date}`
-  * Return  `200 (OK)` to the client.
+    * Use the pubsub system to publish a new message to a channel called ‘newAppointments’. The message should contain a payload: `{“name”: string, “date”: date}`
+    * Return  `200 (OK)` to the client.
 
 Run tests for your code by:
 - Making sure the pubsub server is up locally
