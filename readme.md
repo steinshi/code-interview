@@ -22,9 +22,9 @@ The asynchronous queries use a publish-subscribe system based on “channels”.
 - Does your code handle errors well?
 - Does your code have good logging?
 - We’re not looking to find unimportant mistakes:
--- Don’t get stuck if you don’t understand the instructions. We will help you!
--- Don’t get stuck on silly syntax errors in libraries you have no experience with. We will help you!
--- Don’t get stuck on coding environment / bootstrapping issues. We will help you!
+  * Don’t get stuck if you don’t understand the instructions. We will help you!
+  * Don’t get stuck on silly syntax errors in libraries you have no experience with. We will help you!
+  * Don’t get stuck on coding environment / bootstrapping issues. We will help you!
 - We want you to be able to finish this exercise so we can talk about your solution.
 - You are not expected to finish any bonus from part C. They are there if you happen to have enough time and to open up discussion points.
 - You are not expected to use any specific framework or even any framework at all - work with what you like.
@@ -103,8 +103,8 @@ Use the mock info under `/providers/providers.json` as your data source, but wri
 	`BODY: { “name”: string, “date”: date }`
 - The server should validate that such an availability exists. If it doesn’t, the server should return `400 (BAD REQUEST)`.
 - If such an availability does exist, the server should:
--- Use the pubsub system to publish a new message to a channel called ‘newAppointments’. The message should contain a payload: `{“name”: string, “date”: date}`
--- Return  `200 (OK)` to the client.
+  * Use the pubsub system to publish a new message to a channel called ‘newAppointments’. The message should contain a payload: `{“name”: string, “date”: date}`
+  * Return  `200 (OK)` to the client.
 
 Run tests for your code by:
 - Making sure the pubsub server is up locally
@@ -132,9 +132,9 @@ Run tests for your code by:
 ### Part C - Bonus (Not ordered by priority, feel free to choose)
 - Create a simple web interface that allows searching for providers and setting appointments according to part A.
 - We’re interested in analytics - your CTO wrote a service that subscribes to the pubsub system on the channel “analytics”. Design and implement messages on this channel that would support:
--- Understanding when and which service received/published messages on certain channel
--- Performance - How much time each subscriber/publisher worked on each message?
--- Understanding a workflow - If a specific request from the client creates a chain of messages moving from channel to channel, how can we easily tell what the workflow is?
+  * Understanding when and which service received/published messages on certain channel
+  * Performance - How much time each subscriber/publisher worked on each message?
+  * Understanding a workflow - If a specific request from the client creates a chain of messages moving from channel to channel, how can we easily tell what the workflow is?
 - Create a simple web interface that allows creating/updating/deleting providers’ information according to part B.
 - Create a wrapper library for the pubsub system. It should be used as a JS client for people who want to use the pubsub system without executing HTTP requests by themselves. It should find an available port, spin up a server to listen on that port and use that port to listen to published messages.
 
