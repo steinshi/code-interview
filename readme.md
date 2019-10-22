@@ -15,12 +15,12 @@ The asynchronous queries use a publish-subscribe system based on “channels”.
 - There is no “right” solution! So long as your code works, is readable and extensible- it’s great!
 - You may use whatever external library you need.
 - We’re looking for big picture stuff:
-- Is your code architecture clean?
-- Is it easy to add new functionality?
-- Is your code testable?
-- Is your code readable?
-- Does your code handle errors well?
-- Does your code have good logging?
+  * Is your code architecture clean?
+  * Is it easy to add new functionality?
+  * Is your code testable?
+  * Is your code readable?
+  * Does your code handle errors well?
+  * Does your code have good logging?
 - We’re not looking to find unimportant mistakes:
   * Don’t get stuck if you don’t understand the instructions. We will help you!
   * Don’t get stuck on silly syntax errors in libraries you have no experience with. We will help you!
