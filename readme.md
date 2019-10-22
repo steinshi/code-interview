@@ -30,13 +30,13 @@ The asynchronous queries use a publish-subscribe system based on “channels”.
 - You are not expected to use any specific framework or even any framework at all - work with what you like.
 
 ### Preparing for the exercise
-Make sure you have node.js, npm and git installed
-Clone the repository at `https://github.com/bookmd/code-interview` and create a new branch
-We encourage you to execute each part of this exercise independently. For each part - read the instructions, make sure you understand them with your interviewer, implement the part and call your interviewer before moving on to the next part.
+- Make sure you have node.js, npm and git installed
+- Clone the repository at `https://github.com/bookmd/code-interview` and create a new branch
+- We encourage you to execute each part of this exercise independently. For each part - read the instructions, make sure you understand them with your interviewer, implement the part and call your interviewer before moving on to the next part.
 
 ### What’s a Provider?
 A provider is a doctor. Its Object model looks like this:
-```javascript
+```
 {
     “name”: “Roland Deschain” //Provider’s name
     “specialties”: [“Neurologist”, “Cardiologist”] //The provider’s specialties
@@ -54,7 +54,7 @@ Our pubsub system is simple. It’s an HTTP server that listens on two endpoints
 When a message is sent to a specific channel, the pubsub system sends that message to all of the listeners that subscribed to that specific channel. The pubsub system sends a message to a listener by executing a `POST` request to an endpoint that was given to it by the subscriber.
 
 __To publish a message:__
-```http
+```
 POST /publish
 {	“channel”: string,
 	“payload”: object,
@@ -66,24 +66,24 @@ Metadata: Optional. Any metadata you want to add. Must be a JSON object. This co
 The server will return `200 (OK)` on successful publish, `400 (BAD REQUEST)` if it received a bad parameter and `5XX` on failed publish.
 
 __To subscribe to a channel:__
-```http
+```
   POST /subscribe
 {	“channel”: string,
 	“address”: string	}
 ```
 Channel: Required. The channel name you’re publishing a message to.
-Address: Required. The address to which the pubsub system will send messages that are published on the channel. For example, if you’re interested in the channel “providerUpdates”, you might want to create a REST endpoint at localhost:port/providerUpdates and send that address to the pubsub system when subscribing.
+Address: Required. The address to which the pubsub system will send messages that are published on the channel. For example, if you’re interested in the channel “providerUpdates”, you might want to create a REST endpoint at `localhost:port/providerUpdates` and send that address to the pubsub system when subscribing.
 The server will return `200 (OK)` on successful subscription, `400 (BAD REQUEST)` if it received a bad parameter and `5XX` on failed subscription.
 
 __Receiving messages:__
 Once you’re subscribed to a specific channel, when a message is published on this channel your defined endpoint will receive a request with the following body:
-```http
+```
 {	“payload”: object,
 	“metadata”: object (optional)	}
 ```
 Both parameters are JSON objects and are completely defined by the message’s publisher. Metadata is optional.
 
-Running the pubsub server: inside `./pubsub/`, run npm start. Default port is 3535, but can be changed by running e.g PORT=12000 npm start. There is no way to delete listeners from the server, so just restart it when you need a fresh beginning.
+Running the pubsub server: inside `./pubsub/`, run `npm start`. Default port is 3535, but can be changed by running e.g `PORT=12000 npm start`. There is no way to delete listeners from the server, so just restart it when you need a fresh beginning.
 
 ### Exercise - Part A
 The goal of this part is to create a REST endpoint to allow users to set up appointments. Users look for a provider with a specific specialty (e.g ‘Neurologist’, ‘Cardiologist’) and with availability for a certain date. They should receive a list of providers ordered by relevance, and should be able to select one and set up and appointment with them.
@@ -92,17 +92,17 @@ Use the mock info under `/providers/providers.json` as your data source, but wri
 
 1. Create a REST server with the following endpoint:
 `GET /appointments?specialty=<SPECIALTY>&date=<DATE>`
-- They should only get providers that specialize in that specific specialty. Specialty is not case sensitive.
-- They should only get providers that have an availability in the specific time requested
-- The providers should be ordered by score
-- The endpoint should return an array of provider names according to the order defined above.
-- If there are no suitable providers the endpoint should return an empty array.
-- If the user gave bad parameters, like a missing specialty or a bad date format, the server should return a `400 (BAD REQUEST)` code.
+  * They should only get providers that specialize in that specific specialty. Specialty is not case sensitive.
+  * They should only get providers that have an availability in the specific time requested
+  * The providers should be ordered by score
+  * The endpoint should return an array of provider names according to the order defined above.
+  * If there are no suitable providers the endpoint should return an empty array.
+  * If the user gave bad parameters, like a missing specialty or a bad date format, the server should return a `400 (BAD REQUEST)` code.
 2. Create an endpoint to set up an appointment.
 `POST /appointments`
 	`BODY: { “name”: string, “date”: date }`
-- The server should validate that such an availability exists. If it doesn’t, the server should return `400 (BAD REQUEST)`.
-- If such an availability does exist, the server should:
+  * The server should validate that such an availability exists. If it doesn’t, the server should return `400 (BAD REQUEST)`.
+  * If such an availability does exist, the server should:
   * Use the pubsub system to publish a new message to a channel called ‘newAppointments’. The message should contain a payload: `{“name”: string, “date”: date}`
   * Return  `200 (OK)` to the client.
 
