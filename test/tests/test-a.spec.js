@@ -4,27 +4,27 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const config = require('../config');
 
-const restUrl = `http://localhost:${config.REST_PORT}`;
-const pubsubUrl = `http://localhost:${config.PUBSUB_PORT}`;
-
-function getAppointments(specialty, date) {
-    return request({
-        uri: `${restUrl}/appointments`,
-        qs: {specialty, date},
-        json: true
-    })
-}
-
-function postAppointment(name, date) {
-    return request({
-        uri: `${restUrl}/appointments`,
-        method: 'POST',
-        body: {name, date},
-        json: true,
-    })
-}
-
 describe(`# Test part A of the coding interview`, () => {
+    const restUrl = `http://localhost:${config.REST_PORT}`;
+    const pubsubUrl = `http://localhost:${config.PUBSUB_PORT}`;
+
+    function getAppointments(specialty, date) {
+        return request({
+            uri: `${restUrl}/appointments`,
+            qs: {specialty, date},
+            json: true
+        })
+    }
+
+    function postAppointment(name, date) {
+        return request({
+            uri: `${restUrl}/appointments`,
+            method: 'POST',
+            body: {name, date},
+            json: true,
+        })
+    }
+
     before(() => request(`${pubsubUrl}/reset`));
     after(() => request(`${pubsubUrl}/reset`));
 

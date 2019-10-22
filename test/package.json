@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "pubsub": "node ../pubsub/index.js",
-    "test": "mocha tests/test-a.spec.js"
+    "test-a": "mocha ./tests/test-a.spec.js",
+    "test-b": "mocha ./tests/test-b.spec.js"
   },
   "repository": {
     "type": "git",
