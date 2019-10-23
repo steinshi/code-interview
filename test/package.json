@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "test": "mocha ./tests/**/*.spec.js",
     "test-a": "mocha ./tests/test-a.spec.js",
     "test-b": "mocha ./tests/test-b.spec.js"
   },
