@@ -8,6 +8,12 @@ function sendToListener(listener, payload, metadata) {
         body: { payload, metadata },
         json: true,
         timeout: 200
+    }).catch(err => {
+        if (err.error.code === `ESOCKETTIMEDOUT`) {
+            console.error(`Listener [${listener}] did not return response. Closing connection.`);
+        } else {
+            throw err;
+        }
     })
 }
 
