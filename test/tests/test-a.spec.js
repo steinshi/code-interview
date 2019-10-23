@@ -25,9 +25,6 @@ describe(`# Test part A of the coding interview`, () => {
         })
     }
 
-    before(() => request(`${pubsubUrl}/reset`));
-    after(() => request(`${pubsubUrl}/reset`));
-
     describe(`# Test GET /appointments`, () => {
             it(`# Should get a provider that has a matching specialty and date`, () =>
                 getAppointments('Neuropathy', '2019-10-20T14:00+02')
