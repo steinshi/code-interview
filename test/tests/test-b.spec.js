@@ -46,7 +46,7 @@ function addSuperman() {
     const specialty = supermanProvider.specialties[0];
     const date = supermanProvider.availableDates[0].lte;
     return publishMessage(`addProvider`, supermanProvider)
-        .then(() => wait(200))
+        .then(() => wait(100))
         .then(() => getAppointments(specialty, date))
         .then(result => assert.deepStrictEqual(result, [supermanProvider.name]));
 }
@@ -55,7 +55,7 @@ function removeSuperman() {
     const specialty = supermanProvider.specialties[0];
     const date = supermanProvider.availableDates[0].lte;
     return publishMessage(`deleteProvider`, {name: supermanProvider.name})
-        .then(() => wait(200))
+        .then(() => wait(100))
         .then(() => getAppointments(specialty, date))
         .then(result => assert.deepStrictEqual(result, []));
 }
@@ -83,7 +83,7 @@ describe(`# Test part B of the coding interview`, () => {
             };
             return addSuperman()
                 .then(() => publishMessage(`addProvider`, differentSuperman))
-                .then(() => wait(200))
+                .then(() => wait(100))
                 .then(() => getAppointments(supermanProvider.specialties[0], supermanProvider.availableDates[0].lte))
                 .then(result => assert.deepStrictEqual(result, []))
                 .then(() => getAppointments(differentSuperman.specialties[0], differentSuperman.availableDates[0].lte))
@@ -99,9 +99,8 @@ describe(`# Test part B of the coding interview`, () => {
         after(removeSuperman);
 
         it(`# Should delete a provider`, () => {
-            // Before deleting, add a provider to delete
             return publishMessage(`deleteProvider`, {name: supermanProvider.name})
-                .then(() => wait(200))
+                .then(() => wait(100))
                 .then(() => getAppointments(supermanProvider.specialties[0], supermanProvider.availableDates[0].lte))
                 .then(result => assert.deepStrictEqual(result, []));
         });
@@ -135,7 +134,7 @@ describe(`# Test part B of the coding interview`, () => {
 
                 // Make the update
                 .then(() => publishMessage('updateTimeslots', providerToUpdate))
-                .then(() => wait(300))
+                .then(() => wait(100))
 
                 // Make sure the provider was changed
                 .then(() => getAppointments(specialty, timeBeforeUpdate))
