@@ -6,7 +6,8 @@ function sendToListener(listener, payload, metadata) {
         method: 'POST',
         uri: listener,
         body: { payload, metadata },
-        json: true
+        json: true,
+        timeout: 200
     })
 }
 
