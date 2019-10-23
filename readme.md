@@ -83,7 +83,7 @@ Once you’re subscribed to a specific channel, when a message is published on t
 ```
 Both parameters are JSON objects and are completely defined by the message’s publisher. Metadata is optional.
 
-Running the pubsub server: inside `./pubsub/`, run `npm start`. Default port is 3535, but can be changed by running e.g `PORT=12000 npm start`. There is no way to delete listeners from the server, so just restart it when you need a fresh beginning.
+Running the pubsub server: inside `./pubsub/`, run `npm start`. Default port is 3535, but can be changed by running e.g `PORT=12000 npm start`. To delete the listeners you can call `GET /reset`. This will delete all subscriptions.
 
 ### Exercise - Part A
 The goal of this part is to create a REST endpoint to allow users to set up appointments. Users look for a provider with a specific specialty (e.g ‘Neurologist’, ‘Cardiologist’) and with availability for a certain date. They should receive a list of providers ordered by relevance, and should be able to select one and set up and appointment with them.
