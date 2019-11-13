@@ -59,6 +59,8 @@ A provider is a doctor. Its Object model looks like this:
 The dates (all dates in our system) are in [milliseconds since epoch](https://currentmillis.com/?now#unix-timestamp) (January 1, 1970 12:00:00 AM GMT+00:00).
 The dates are inclusive, meaning that if a provider has an availability of `{"from":100, "to":200}` then acceptable dates for an appointment would be: `150`, `100`, `200` but not `99`, `201`. 
 
+For the purpose of this exercise, you will get a Provider list from a .json file and all reading/writing from/to it should be done in memory. Design your system in a way that supports millions of Providers, each with thousands of Specialties and AvailableDates, all in memory.
+
 ### Pubsub system
 Our pubsub system is simple. It’s an HTTP server that listens on two endpoints: `publish`, `subscribe`. The system is based on channels, which are just different names for which you can subscribe and publish messages. It is up to the publishers and subscribers to decide which channels to define and how to use and name them.
 When a message is sent to a specific channel, the pubsub system sends that message to all of the listeners that subscribed to that specific channel. The pubsub system sends a message to a listener by executing a `POST` request to an endpoint that was given to it by the subscriber.
@@ -102,9 +104,10 @@ The goal of this part is to create a REST endpoint to allow users to set up appo
 Use the mock info under `/providers/providers.json` as your data source, but write your code such that it will be easy to switch this mock for an actual data source like a database / another HTTP endpoint.
 
 1. Create a REST server with the following endpoint:
-`GET /appointments?specialty=<SPECIALTY>&date=<DATE>`
+`GET /appointments?specialty=<SPECIALTY>&date=<DATE>&minScore=<SCORE>`
   * They should only get providers that specialize in that specific specialty. Specialty is not case sensitive.
   * They should only get providers that have an availability in the specific time requested
+  * They should only get providers whose scores are at least <SCORE> (inclusive, if `minScore=9.0` then a provider with score 9.0 should return)
   * The providers should be ordered by score
   * The endpoint should return an array of provider names according to the order defined above.
   * If there are no suitable providers the endpoint should return an empty array.

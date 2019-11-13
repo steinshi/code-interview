@@ -17,7 +17,7 @@ function publishMessage(channel, payload, metadata) {
 function getAppointments(specialty, date) {
     return request({
         uri: `${restUrl}/appointments`,
-        qs: {specialty, date},
+        qs: {specialty, date, minScore: 0},
         json: true
     })
 }
