@@ -36,15 +36,15 @@ const supermanProvider = {
     ],
     availableDates: [
         {
-            gte: "1995-10-20T08:00+0100",
-            lte: "1995-10-20T08:00+0100"
+            from: 814172400000,
+            to: 814172400000
         }
     ]
 };
 
 function addSuperman() {
     const specialty = supermanProvider.specialties[0];
-    const date = supermanProvider.availableDates[0].lte;
+    const date = supermanProvider.availableDates[0].to;
     return publishMessage(`addProvider`, supermanProvider)
         .then(() => wait(100))
         .then(() => getAppointments(specialty, date))
@@ -53,7 +53,7 @@ function addSuperman() {
 
 function removeSuperman() {
     const specialty = supermanProvider.specialties[0];
-    const date = supermanProvider.availableDates[0].lte;
+    const date = supermanProvider.availableDates[0].to;
     return publishMessage(`deleteProvider`, {name: supermanProvider.name})
         .then(() => wait(100))
         .then(() => getAppointments(specialty, date))
@@ -76,17 +76,17 @@ describe(`# Test part B of the coding interview`, () => {
                 ],
                 availableDates: [
                     {
-                        gte: "2050-01-01T08:00+0100",
-                        lte: "2050-01-01T10:00+0100"
+                        from: 2524633200000,
+                        to: 2524640400000
                     }
                 ]
             };
             return addSuperman()
                 .then(() => publishMessage(`addProvider`, differentSuperman))
                 .then(() => wait(100))
-                .then(() => getAppointments(supermanProvider.specialties[0], supermanProvider.availableDates[0].lte))
+                .then(() => getAppointments(supermanProvider.specialties[0], supermanProvider.availableDates[0].to))
                 .then(result => assert.deepStrictEqual(result, []))
-                .then(() => getAppointments(differentSuperman.specialties[0], differentSuperman.availableDates[0].lte))
+                .then(() => getAppointments(differentSuperman.specialties[0], differentSuperman.availableDates[0].to))
                 .then(result => assert.deepStrictEqual(result, [differentSuperman.name]));
         })
     });
@@ -101,7 +101,7 @@ describe(`# Test part B of the coding interview`, () => {
         it(`# Should delete a provider`, () => {
             return publishMessage(`deleteProvider`, {name: supermanProvider.name})
                 .then(() => wait(100))
-                .then(() => getAppointments(supermanProvider.specialties[0], supermanProvider.availableDates[0].lte))
+                .then(() => getAppointments(supermanProvider.specialties[0], supermanProvider.availableDates[0].to))
                 .then(result => assert.deepStrictEqual(result, []));
         });
     });
@@ -114,13 +114,13 @@ describe(`# Test part B of the coding interview`, () => {
         after(removeSuperman);
 
         it(`# Should update available dates`, () => {
-            const timeBeforeUpdate = supermanProvider.availableDates[0].lte;
-            const timeAfterUpdate = "1990-10-20T08:00+0100";
+            const timeBeforeUpdate = supermanProvider.availableDates[0].to;
+            const timeAfterUpdate = 656406000000;
             const providerToUpdate = {
                 name: supermanProvider.name, availableDates: [
                     {
-                        gte: timeAfterUpdate,
-                        lte: timeAfterUpdate
+                        from: timeAfterUpdate,
+                        to: timeAfterUpdate
                     }
                 ]
             };

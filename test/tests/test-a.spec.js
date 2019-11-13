@@ -27,37 +27,37 @@ describe(`# Test part A of the coding interview`, () => {
 
     describe(`# Test GET /appointments`, () => {
             it(`# Should get a provider that has a matching specialty and date`, () =>
-                getAppointments('Neuropathy', '2019-10-20T14:00+02')
+                getAppointments('Neuropathy', 1571572800000)
                     .then(result => assert.deepStrictEqual(result, ['Susannah Dean'])));
 
             it(`# Should get a provider that has a matching specialty and date, specialty isn't case sensitive`, () =>
-                getAppointments('neuropathy', '2019-10-20T14:00+02')
+                getAppointments('neuropathy', 1571572800000)
                     .then(result => assert.deepStrictEqual(result, ['Susannah Dean'])));
 
             it(`# Should get several providers that have matching specialty and date ordered by score`, () =>
-                getAppointments('Cardiologist', '2019-10-21T10:01+04')
+                getAppointments('Cardiologist', 1571637660000)
                     .then(result => assert.deepStrictEqual(result, ['Roland Deschain', 'Jake Chambers'])));
 
             it(`# Should not get a provider if they do not have a matching time slot, even if they have matching specialty`, () =>
-                getAppointments('Internist', '2019-10-21T10:01+04')
+                getAppointments('Internist', 1571637660000)
                     .then(result => assert.deepStrictEqual(result, [])));
 
             it(`# Should not get a provider if they do not have a matching specialty, even if they have matching time slots`, () =>
-                getAppointments('Internist', '2020-05-20T23:00-09')
+                getAppointments('Internist', 1590048000000)
                     .then(result => assert.deepStrictEqual(result, [])));
 
             it(`# Should get a provider that has a matching specialty and date even if given a different time zone`, () =>
-                getAppointments('Physiologist', '2027-04-29T10:00+03')
+                getAppointments('Physiologist', 1808982000000)
                     .then(result => assert.deepStrictEqual(result, ['Randall Flagg'])));
 
             it(`# Should return code 400 if no specialty was supplied`, () =>
-                getAppointments('', '2027-04-29T10:00+03')
+                getAppointments('', 1808982000000)
                     .then(() => assert.fail(`Promise should've rejected!`))
                     .catch(error => assert.deepStrictEqual(error.statusCode, 400)));
 
             it(`# Should return code 400 if bad date format was supplied`, () =>
-                getAppointments('Physiologist', '2027-99-29T10:00+03')
-                    .then((result) => assert.fail(`Promise should've rejected!`))
+                getAppointments('Physiologist', 'abcdefg')
+                    .then(() => assert.fail(`Promise should've rejected!`))
                     .catch(error => assert.deepStrictEqual(error.statusCode, 400)));
         }
     );
@@ -92,21 +92,21 @@ describe(`# Test part A of the coding interview`, () => {
             handler = () => {
                 done(new Error(`Expected postAppointment to throw error and not reach this stage!`));
             };
-            postAppointment("Roland Deschain", "2027-04-29T08:00+0100")
+            postAppointment("Roland Deschain", 1808982000000)
                 .then(() => done(new Error(`Expected postAppointment to throw error and not reach this stage!`)))
                 .catch(error => done(assert.deepStrictEqual(error.statusCode, 400)));
         });
 
         it(`# should successfully update an appointment and return code 200`, () =>
-            postAppointment("Roland Deschain", "2019-10-20T13:00+0200")
+            postAppointment("Roland Deschain", 1571569200000)
         );
 
         it(`# should successfully update an appointment and publish the appointment to the pubsub`, done => {
                 handler = (message) => {
-                    if (message.payload.name === "Roland Deschain" && message.payload.date === "2019-10-20T13:00+0200") done();
+                    if (message.payload.name === "Roland Deschain" && message.payload.date === 1571569200000) done();
                     else done(new Error(`Unexpected message received from pubsub: ${JSON.stringify(message)}`));
                 };
-                postAppointment("Roland Deschain", "2019-10-20T13:00+0200")
+                postAppointment("Roland Deschain", 1571569200000)
                     .catch(done);
             }
         )

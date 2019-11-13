@@ -50,13 +50,14 @@ A provider is a doctor. Its Object model looks like this:
     “name”: “Roland Deschain” //Provider’s name
     “specialties”: [“Neurologist”, “Cardiologist”] //The provider’s specialties
     “availableDates”: [ //Available time slots for appointments
-        {“gte”:”2019-01-31T13:00+02”,”lte”:”2019-01-31T16:00+02”},
-        {“gte”:”2019-02-01T08:00+02”,”lte”:”2019-02-01T16:30+02”}
+        {“from”:1548932400000,”to”:1548943200000},
+        {“from”:1549000800000,”to”:1549031400000}
     ]
     “score”: 9.3 //Vim’s “secret sauce” - a provider’s score
 }
 ```
-The dates (all dates in our system) are according to ISO-8601 (`YYYY-MM-DDThh:mmZZ`).
+The dates (all dates in our system) are in [milliseconds since epoch](https://currentmillis.com/?now#unix-timestamp) (January 1, 1970 12:00:00 AM GMT+00:00).
+The dates are inclusive, meaning that if a provider has an availability of `{"from":100, "to":200}` then acceptable dates for an appointment would be: `150`, `100`, `200` but not `99`, `201`. 
 
 ### Pubsub system
 Our pubsub system is simple. It’s an HTTP server that listens on two endpoints: `publish`, `subscribe`. The system is based on channels, which are just different names for which you can subscribe and publish messages. It is up to the publishers and subscribers to decide which channels to define and how to use and name them.
@@ -107,7 +108,7 @@ Use the mock info under `/providers/providers.json` as your data source, but wri
   * The providers should be ordered by score
   * The endpoint should return an array of provider names according to the order defined above.
   * If there are no suitable providers the endpoint should return an empty array.
-  * If the user gave bad parameters, like a missing specialty or a bad date format, the server should return a `400 (BAD REQUEST)` code.
+  * If the user gave bad parameters, like a missing specialty or a bad date format (should be [milliseconds since epoch](https://currentmillis.com/?now#unix-timestamp)), the server should return a `400 (BAD REQUEST)` code.
 2. Create an endpoint to set up an appointment.
 `POST /appointments`
 	`BODY: { “name”: string, “date”: date }`
