@@ -2,17 +2,17 @@
 These are instructions for your coding exercise. Please read them carefully and make sure to ask whatever question pops into your mind.
 
 ### Goal
-We want to create a system for scheduling appointments with providers (doctors). The end result supports:
-- Searching for providers to set up an appointment with.
-- Selecting an appointment date from the search results & notifying the provider of the new appointment.
-- Receiving updates from the provider of new free dates for appointments
+We would like to create a system for scheduling appointments with providers (doctors), which would able to:
+- Search for providers to set up an appointment with.
+- Select an appointment date from the search results & notifying the provider of the new appointment.
+- Receive requests for adding, updating or deleting providers
 
 Our system supports both synchronous queries and async queries. We use synchronous queries where possible, but sometimes when we rely on slow/unreliable external systems or when we need an event-based workflow we use an async system.
 The synchronous queries use REST APIs - one of which you will build.
-The asynchronous queries use a publish-subscribe system based on “channels”. You will connect to this system as both a subscriber and a publisher.
+The asynchronous queries use a publish-subscribe (pub-sub) system based on “channels”. You will connect to this system as both a subscriber and a publisher.
 
 ### What are we looking for?
-- There is no “right” solution! So long as your code works, is readable and extensible- it’s great!
+- There is no “right” solution! As long as your code works, is readable and extensible- it’s great!
 - You may use whatever external library you need.
 - We’re looking for big picture stuff:
   * Is your code architecture clean?
@@ -56,13 +56,17 @@ A provider is a doctor. Its Object model looks like this:
     “score”: 9.3 //Vim’s “secret sauce” - a provider’s score
 }
 ```
-The dates (all dates in our system) are in [milliseconds since epoch](https://currentmillis.com/?now#unix-timestamp) (January 1, 1970 12:00:00 AM GMT+00:00).
+We take the **provider's name** as **unique**, which we can differentiate between providers - you can rely on that when you think about data modeling.
+
+**Dates:** The dates (all dates in our system) are formatted as [Milliseconds since epoch](https://currentmillis.com/?now#unix-timestamp) (Which means that a date like this - `31/11/1990 16:30` is written like this - `660061800000` ).
 The dates are inclusive, meaning that if a provider has an availability of `{"from":100, "to":200}` then acceptable dates for an appointment would be: `150`, `100`, `200` but not `99`, `201`. 
 
-For the purpose of this exercise, you will get a Provider list from a .json file and all reading/writing from/to it should be done in memory. Design your system in a way that supports millions of Providers, each with thousands of Specialties and AvailableDates, all in memory.
+**Datasource:** For the purpose of this exercise, you will get a Provider list from a .json file and all reading/writing from/to it should be done **in memory**. Design your system in a way that supports millions of Providers, each with thousands of Specialties and AvailableDates, all in memory.
 
 ### Pubsub system
-Our pubsub system is simple. It’s an HTTP server that listens on two endpoints: `publish`, `subscribe`. The system is based on channels, which are just different names for which you can subscribe and publish messages. It is up to the publishers and subscribers to decide which channels to define and how to use and name them.
+Our pubsub system is simple. It’s an HTTP server that listens on two endpoints: `publish`, `subscribe`.
+
+The system is based on channels, which according to their name you can either publish messages and subscribe to. It is up to the publishers and subscribers to decide which channels to define and how to use and name them.
 When a message is sent to a specific channel, the pubsub system sends that message to all of the listeners that subscribed to that specific channel. The pubsub system sends a message to a listener by executing a `POST` request to an endpoint that was given to it by the subscriber.
 
 __Publishing a message:__
@@ -72,9 +76,9 @@ POST /publish
 	“payload”: object,
 	“metadata”: object (optional)	}
 ```
-Channel: Required. The channel name you’re publishing a message to.
-Payload: Required. The message content. Must be a JSON object.
-Metadata: Optional. Any metadata you want to add. Must be a JSON object. This could include, for example, the publisher’s name, or the date of the published message, or a random id. It is it up to the publisher to decide which metadata is relevant.
+* **Channel** _(Required)_**:** The channel name you’re publishing a message to.
+* **Payload** _(Required)_**:** The message content. Must be a JSON object.
+* **Metadata** _(Optional)_**:** Any metadata you want to add. Must be a JSON object. This could include, for example, the publisher’s name, or the date of the published message, or a random id. It is it up to the publisher to decide which metadata is relevant.
 The server will return `200 (OK)` on successful publish, `400 (BAD REQUEST)` if it received a bad parameter and `5XX` on failed publish.
 
 __Subscribing to a channel:__
@@ -83,11 +87,12 @@ __Subscribing to a channel:__
 {	“channel”: string,
 	“address”: string	}
 ```
-Channel: Required. The channel name you’re publishing a message to.
-Address: Required. The address to which the pubsub system will send messages that are published on the channel. For example, if you’re interested in the channel “providerUpdates”, you might want to create a REST endpoint at `localhost:port/providerUpdates` and send that address to the pubsub system when subscribing.
+* **Channel** _(Required)_**:** The channel name you’re publishing a message to.
+* **Address** _(Required)_**:** The address to which the pubsub system will send messages that are published on the channel. For example, if you’re interested in the channel “providerUpdates”, you might want to create a REST endpoint at `localhost:port/providerUpdates` and send that address to the pubsub system when subscribing.
 The server will return `200 (OK)` on successful subscription, `400 (BAD REQUEST)` if it received a bad parameter and `5XX` on failed subscription.
 
 __Receiving messages:__
+
 Once you’re subscribed to a specific channel, when a message is published on this channel your defined endpoint will receive a request with the following body:
 ```
 {	“payload”: object,
@@ -96,42 +101,43 @@ Once you’re subscribed to a specific channel, when a message is published on t
 Both parameters are JSON objects and are completely defined by the message’s publisher. Metadata is optional.
 
 __Cancelling subscriptions:__
+
 To delete the listeners you can call `GET /reset`. This will delete all subscriptions from all channels.
 
 ### Exercise - Part A
 The goal of this part is to create a REST endpoint to allow users to set up appointments. Users look for a provider with a specific specialty (e.g ‘Neurologist’, ‘Cardiologist’) and with availability for a certain date. They should receive a list of providers ordered by relevance, and should be able to select one and set up an appointment with them.
 
 Use the mock info under `/providers/providers.json` as your data source, but write your code such that it will be easy to switch this mock for an actual data source like a database / another HTTP endpoint.
-
 1. Create a REST server with the following endpoint:
-`GET /appointments?specialty=<SPECIALTY>&date=<DATE>&minScore=<SCORE>`
-  * They should only get providers that specialize in that specific specialty. Specialty is not case sensitive.
-  * They should only get providers that have an availability in the specific time requested
-  * They should only get providers whose scores are at least <SCORE> (inclusive, if `minScore=9.0` then a provider with score 9.0 should return)
-  * The providers should be ordered by score
-  * The endpoint should return an array of provider names according to the order defined above.
-  * If there are no suitable providers the endpoint should return an empty array.
-  * If the user gave bad parameters, like a missing specialty or a bad date format (should be [milliseconds since epoch](https://currentmillis.com/?now#unix-timestamp)), the server should return a `400 (BAD REQUEST)` code.
-2. Create an endpoint to set up an appointment.
+   `GET /appointments?specialty=<SPECIALTY>&date=<DATE>&minScore=<SCORE>` which will return the matching results:
+   
+   * **Threshold:** They should only get providers whose scores are matching that threshold <SCORE> (inclusive, if `minScore=9.0` then a provider with score 9.0 should be valid)
+   * **Specialty:** They should only get providers that specialize in that specific specialty. Specialty is not case sensitive.
+   * **Availability:** They should only get providers that are available in the specific time requested
+   * The providers should be ordered by score
+* The endpoint should return an array of **provider names** according to the order defined above.
+* If there are no suitable providers the endpoint should return an **empty array**.
+* If the user gave bad parameters, like a missing specialty or a bad date format (should be [milliseconds since epoch](https://currentmillis.com/?now#unix-timestamp)), the server should return a `400 (BAD REQUEST)` code.
+
+2. Create an endpoint to set up an appointment:
 `POST /appointments`
-	`BODY: { “name”: string, “date”: date }`
+	`BODY: { “name”: string, “date”: date }`:
   * The server should validate that such an availability exists. If it doesn’t, the server should return `400 (BAD REQUEST)`.
   * If such an availability does exist, the server should:
-    * Use the pubsub system to publish a new message to a channel called ‘newAppointments’. The message should contain a payload: `{“name”: string, “date”: date}`
-    * Return  `200 (OK)` to the client.
-
+  * Use the pubsub system to publish a new message to a channel called ‘newAppointments’. The message should contain a payload: `{“name”: string, “date”: date}`
+  * Return  `200 (OK)` to the client.
 ### Exercise - Part B
 The goal of this part is to support changes by the providers. Your server should support:
-- Adding / removing providers
-- Changing providers’ time slots
+- Adding / Updating providers
+- Removing providers
 
 These changes are given to you asynchronously using the pubsub system.
-For this part, assume providers are identified by their name, there’s no duplicates in name. You should make sure your changes don’t create duplicates.
-All the changes for the providers’ info should happen in memory, not on disk. Restarting your server should revert them.
+For this part, as we said before, assume providers are identified by their name, there are no duplicates in name. You should support **'upserting'**, which means that if a name doesn't exist - add as new provider, if it does - update it.
+
+**All the changes for the providers’ info should happen in memory, not on disk. Restarting your server should revert them.**
 
 1. Subscribe to the channel called ‘addProvider’. The messages on this channel have a payload that’s a provider according to the object model described above. Your server should receive updates on this channel and add/update your data model according to the changes received.
 2. Subscribe to the channel called ‘deleteProvider’. The messages on this channel have a payload that looks like this: `{“name”: string}`. Your server should delete the provider according to the deletions received.
-3. Subscribe to the channel called ‘updateTimeslots’. The messages on this channel have a payload that looks like this: `{“name”: string, “availableDates”: [...]}`. Your server should update the available time slots according to the payload received. Notice - the dates received contain all available dates, there’s no need to merge the new info with the old one.
 
 ### Part C - Bonus (Not ordered by priority, feel free to choose)
 - Create a simple web interface that allows searching for providers and setting appointments according to part A.

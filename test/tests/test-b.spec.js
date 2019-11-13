@@ -105,42 +105,4 @@ describe(`# Test part B of the coding interview`, () => {
                 .then(result => assert.deepStrictEqual(result, []));
         });
     });
-
-    describe(`# Test updateTimeslots`, () => {
-        // Make sure we have a provider to update
-        before(addSuperman);
-
-        //cleanup;
-        after(removeSuperman);
-
-        it(`# Should update available dates`, () => {
-            const timeBeforeUpdate = supermanProvider.availableDates[0].to;
-            const timeAfterUpdate = 656406000000;
-            const providerToUpdate = {
-                name: supermanProvider.name, availableDates: [
-                    {
-                        from: timeAfterUpdate,
-                        to: timeAfterUpdate
-                    }
-                ]
-            };
-            const specialty = supermanProvider.specialties[0];
-
-            // First validate the existence of the provider before the update
-            return getAppointments(specialty, timeBeforeUpdate)
-                .then(result => assert.deepStrictEqual(result, [supermanProvider.name]))
-                .then(() => getAppointments(specialty, timeAfterUpdate))
-                .then(result => assert.deepStrictEqual(result, []))
-
-                // Make the update
-                .then(() => publishMessage('updateTimeslots', providerToUpdate))
-                .then(() => wait(100))
-
-                // Make sure the provider was changed
-                .then(() => getAppointments(specialty, timeBeforeUpdate))
-                .then(result => assert.deepStrictEqual(result, []))
-                .then(() => getAppointments(specialty, timeAfterUpdate))
-                .then(result => assert.deepStrictEqual(result, [providerToUpdate.name]))
-        });
-    })
 });
