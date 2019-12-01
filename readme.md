@@ -28,27 +28,14 @@ The asynchronous queries use a publish-subscribe (pub-sub) system based on “ch
 - We want you to be able to finish this exercise so we can talk about your solution.
 - You are not expected to finish any bonus from part C. They are there if you happen to have enough time and to open up discussion points.
 - You are not expected to use any specific framework or even any framework at all - work with what you like.
-
-### Preparing for the exercise and running the tests
-- Make sure you have node.js, npm and git installed.
-- Clone this repository and create a new branch.
-- Inside the repository you have three folders:
-  * `./pubsub` contains a server for a messaging system which will be explained further.
-  * `./providers` contains mock data
-  * `./test` contains the tests for your code
-- Run `npm install` inside `./pubsub` and `./test`.
-- To run the tests for each part, you will need to have both the pubsub server and the server you will write running in the background.
-  * To run the pubsub server, run `npm start` inside `./pubsub`. By default it runs on port 3535. Change it using the `PORT` env variable. For example: `PORT=6700 npm start`.
-  * The tests expect the pubsub server and your server on default ports 3535 and 3500 respectively. They also need port 3838 to be available. You can change all of these in `./test/config.js`.
-  * In `./test` execute `npm run test-a`, `npm run test-b` or `npm run test` to test part A, part B or both.
 - We encourage you to execute each part of this exercise independently. For each part - read the instructions, make sure you understand them with your interviewer, implement the part, verify the tests pass and call your interviewer before moving on to the next part.
 
 ### What’s a Provider?
 A provider is a doctor. Its Object model looks like this:
 ```
 {
-    “name”: “Roland Deschain” //Provider’s name
-    “specialties”: [“Neurologist”, “Cardiologist”] //The provider’s specialties
+    “name”: “Roland Deschain”, //Provider’s name
+    “specialties”: [“Neurologist”, “Cardiologist”], //The provider’s specialties
     “availableDates”: [ //Available time slots for appointments
         {“from”:1548932400000,”to”:1548943200000},
         {“from”:1549000800000,”to”:1549031400000}
@@ -63,8 +50,45 @@ The dates are inclusive, meaning that if a provider has an availability of `{"fr
 
 **Datasource:** For the purpose of this exercise, you will get a Provider list from a .json file and all reading/writing from/to it should be done **in memory**. Design your system in a way that supports millions of Providers, each with thousands of Specialties and AvailableDates, all in memory.
 
+## Part A
+### Preparing for the exercise and running the tests
+- Make sure you have node.js, npm and git installed.
+- Clone this repository and create a new branch.
+- The relevant folders for Part A:
+  * `./providers` contains mock data
+  * `./test` contains the tests for your code
+- Run `npm install` inside `./test`.
+- To run the tests for this part, you will need to have the server that you will implement running in the background.
+  * Your server should be running on port 3500. You can change this in `./test/config.js`.
+  * In `./test` execute `npm run test-a`.
+
+### Exercise
+The goal of this part is to create a REST endpoint to allow users to set up appointments. Users look for a provider with a specific specialty (e.g ‘Neurologist’, ‘Cardiologist’) and with availability for a certain date. They should receive a list of providers ordered by relevance, and should be able to select one and set up an appointment with them.
+
+Use the mock info under `/providers/providers.json` as your data source, but write your code such that it will be easy to switch this mock for an actual data source like a database / another HTTP endpoint.
+
+- Create a REST server with the following endpoint:
+   `GET /appointments?specialty=<SPECIALTY>&date=<DATE>&minScore=<SCORE>`
+   * The results should take into acount:
+     * **Threshold:** They should only get providers whose scores are matching that threshold <SCORE> (inclusive, if `minScore=9.0` then a provider with score 9.0 should be valid)
+     * **Specialty:** They should only get providers that specialize in that specific specialty. Specialty is not case sensitive.
+     * **Availability:** They should only get providers that are available in the specific time requested
+     * The providers should be ordered by score
+  * The endpoint should return an array of **provider names** according to the order defined above.
+  * If there are no suitable providers the endpoint should return an **empty array**.
+  * If the user gave bad parameters, like a missing specialty or a bad date format (should be [milliseconds since epoch](https://currentmillis.com/?now#unix-timestamp)), the server should return a `400 (BAD REQUEST)` code.
+
+- Create an endpoint to set up an appointment:
+`POST /appointments`
+	`BODY: { “name”: string, “date”: date }`:
+  * The server should validate that such an availability exists. If it doesn’t, the server should return `400 (BAD REQUEST)`.
+  * If such an availability does exist, the server should return a `200 (OK)` response to the client.
+
+## Part B
+Before moving forward, let's just make sure - did you finish part A? Did you go over it with your interviewer? Good job :)
+
 ### Pubsub system
-Our pubsub system is simple. It’s an HTTP server that listens on two endpoints: `publish`, `subscribe`.
+Our pubsub system is an HTTP server that listens on two endpoints: `publish`, `subscribe`.
 
 The system is based on channels, which according to their name you can either publish messages and subscribe to. It is up to the publishers and subscribers to decide which channels to define and how to use and name them.
 When a message is sent to a specific channel, the pubsub system sends that message to all of the listeners that subscribed to that specific channel. The pubsub system sends a message to a listener by executing a `POST` request to an endpoint that was given to it by the subscriber.
@@ -93,7 +117,7 @@ The server will return `200 (OK)` on successful subscription, `400 (BAD REQUEST)
 
 __Receiving messages:__
 
-Once you’re subscribed to a specific channel, when a message is published on this channel your defined endpoint will receive a request with the following body:
+Once you’re subscribed to a specific channel, when a message is published on this channel your defined endpoint will receive a `POST` request with the following body:
 ```
 {	“payload”: object,
 	“metadata”: object (optional)	}
@@ -104,40 +128,27 @@ __Cancelling subscriptions:__
 
 To delete the listeners you can call `GET /reset`. This will delete all subscriptions from all channels.
 
-### Exercise - Part A
-The goal of this part is to create a REST endpoint to allow users to set up appointments. Users look for a provider with a specific specialty (e.g ‘Neurologist’, ‘Cardiologist’) and with availability for a certain date. They should receive a list of providers ordered by relevance, and should be able to select one and set up an appointment with them.
+### Preparing for the exercise and running the tests
+- Make sure you've completed part A of this exercise.
+- Run `npm install` inside `./pubsub`.
+- Running the pubsub server:
+  * To run the pubsub server, run `npm start` inside `./pubsub`. By default it runs on port 3535. Change it using the `PORT` env variable. For example: `PORT=6700 npm start`.
+  * The tests expect the pubsub server and your server on default ports 3535 and 3500 respectively. They also need port 3838 to be available. You can change all of these in `./test/config.js`.
+  * In `./test` execute `npm run test-a`, `npm run test-b` or `npm run test` to test part A, part B or both.
 
-Use the mock info under `/providers/providers.json` as your data source, but write your code such that it will be easy to switch this mock for an actual data source like a database / another HTTP endpoint.
-1. Create a REST server with the following endpoint:
-   `GET /appointments?specialty=<SPECIALTY>&date=<DATE>&minScore=<SCORE>` which will return the matching results:
-   
-   * **Threshold:** They should only get providers whose scores are matching that threshold <SCORE> (inclusive, if `minScore=9.0` then a provider with score 9.0 should be valid)
-   * **Specialty:** They should only get providers that specialize in that specific specialty. Specialty is not case sensitive.
-   * **Availability:** They should only get providers that are available in the specific time requested
-   * The providers should be ordered by score
-* The endpoint should return an array of **provider names** according to the order defined above.
-* If there are no suitable providers the endpoint should return an **empty array**.
-* If the user gave bad parameters, like a missing specialty or a bad date format (should be [milliseconds since epoch](https://currentmillis.com/?now#unix-timestamp)), the server should return a `400 (BAD REQUEST)` code.
-
-2. Create an endpoint to set up an appointment:
-`POST /appointments`
-	`BODY: { “name”: string, “date”: date }`:
-  * The server should validate that such an availability exists. If it doesn’t, the server should return `400 (BAD REQUEST)`.
-  * If such an availability does exist, the server should:
-  * Use the pubsub system to publish a new message to a channel called ‘newAppointments’. The message should contain a payload: `{“name”: string, “date”: date}`
-  * Return  `200 (OK)` to the client.
-### Exercise - Part B
-The goal of this part is to support changes by the providers. Your server should support:
-- Adding / Updating providers
+### Exercise
+The goal of this part is to support sending/receiving messages to/from the providers' applications by using the pubsub system. Your server should support:
+- Setting a new appointment
+- Adding / Updating providers' info
 - Removing providers
 
 These changes are given to you asynchronously using the pubsub system.
 For this part, as we said before, assume providers are identified by their name, there are no duplicates in name. You should support **'upserting'**, which means that if a name doesn't exist - add as new provider, if it does - update it.
 
 **All the changes for the providers’ info should happen in memory, not on disk. Restarting your server should revert them.**
-
-1. Subscribe to the channel called ‘addProvider’. The messages on this channel have a payload that’s a provider according to the object model described above. Your server should receive updates on this channel and add/update your data model according to the changes received.
-2. Subscribe to the channel called ‘deleteProvider’. The messages on this channel have a payload that looks like this: `{“name”: string}`. Your server should delete the provider according to the deletions received.
+1. Whenever a user sets a new appointment using the `POST /appointments` endpoint you wrote in Part A, use the pubsub system to publish a new message to a channel called ‘newAppointments’. The message should contain a payload: `{“name”: string, “date”: date}`
+2. Subscribe to the channel called ‘addProvider’. The messages on this channel have a payload that’s a provider according to the object model described above. Your server should receive updates on this channel and add/update your data model according to the changes received.
+3. Subscribe to the channel called ‘deleteProvider’. The messages on this channel have a payload that looks like this: `{“name”: string}`. Your server should delete the provider according to the deletions received.
 
 ### Part C - Bonus (Not ordered by priority, feel free to choose)
 - Create a simple web interface that allows searching for providers and setting appointments according to part A.

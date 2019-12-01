@@ -1,7 +1,5 @@
 const assert = require('assert');
 const request = require('request-promise');
-const express = require('express');
-const bodyParser = require('body-parser');
 const config = require('../config');
 
 describe(`# Test part A of the coding interview`, () => {
@@ -68,31 +66,6 @@ describe(`# Test part A of the coding interview`, () => {
     );
 
     describe(`# Test POST /appointments`, () => {
-        let handler;
-        let server;
-
-        function subscribeToNewAppointments() {
-            const app = express();
-            const port = config.SUBSCRIBER_PORT;
-            app.use(bodyParser.json());
-            app.route('/newAppointment').post((request, response) => handler ? handler(request.body) : response.status(200).send());
-            server = app.listen(port);
-            return request({
-                method: 'POST',
-                uri: `${pubsubUrl}/subscribe`,
-                body: {channel: 'newAppointments', address: `http://localhost:${port}/newAppointment`},
-                json: true
-            })
-        }
-
-        function shutDownSubscriber() {
-            server.close();
-        }
-
-        before(subscribeToNewAppointments);
-        beforeEach(() => handler = null);
-        after(shutDownSubscriber);
-
         it(`# should return 400 when providing name and date that don't have an availability`, done => {
             handler = () => {
                 done(new Error(`Expected postAppointment to throw error and not reach this stage!`));
@@ -102,18 +75,8 @@ describe(`# Test part A of the coding interview`, () => {
                 .catch(error => done(assert.deepStrictEqual(error.statusCode, 400)));
         });
 
-        it(`# should successfully update an appointment and return code 200`, () =>
+        it(`# should receive code 200 when trying to schedule appointment with correct details`, () =>
             postAppointment("Roland Deschain", 1571569200000)
         );
-
-        it(`# should successfully update an appointment and publish the appointment to the pubsub`, done => {
-                handler = (message) => {
-                    if (message.payload.name === "Roland Deschain" && message.payload.date === 1571569200000) done();
-                    else done(new Error(`Unexpected message received from pubsub: ${JSON.stringify(message)}`));
-                };
-                postAppointment("Roland Deschain", 1571569200000)
-                    .catch(done);
-            }
-        )
     })
 });

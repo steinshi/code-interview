@@ -1,5 +1,7 @@
 const assert = require('assert');
 const request = require('request-promise');
+const express = require('express');
+const bodyParser = require('body-parser');
 const config = require('../config');
 
 const restUrl = `http://localhost:${config.REST_PORT}`;
@@ -62,6 +64,52 @@ function removeSuperman() {
 
 
 describe(`# Test part B of the coding interview`, () => {
+    describe(`# Test POST /appointments`, () => {
+        let handler;
+        let server;
+
+        function subscribeToNewAppointments() {
+            const app = express();
+            const port = config.SUBSCRIBER_PORT;
+            app.use(bodyParser.json());
+            app.route('/newAppointment').post((request, response) => handler ? handler(request.body) : response.status(200).send());
+            server = app.listen(port);
+            return request({
+                method: 'POST',
+                uri: `${pubsubUrl}/subscribe`,
+                body: {channel: 'newAppointments', address: `http://localhost:${port}/newAppointment`},
+                json: true
+            })
+        }
+
+        function shutDownSubscriber() {
+            server.close();
+        }
+
+        before(subscribeToNewAppointments);
+        beforeEach(() => handler = null);
+        after(shutDownSubscriber);
+
+        function postAppointment(name, date) {
+            return request({
+                uri: `${restUrl}/appointments`,
+                method: 'POST',
+                body: {name, date},
+                json: true,
+            })
+        }
+
+        it(`# should successfully update an appointment and publish the appointment to the pubsub`, done => {
+                handler = message => {
+                    if (message.payload.name === "Roland Deschain" && message.payload.date === 1571569200000) done();
+                    else done(new Error(`Unexpected message received from pubsub: ${JSON.stringify(message)}`));
+                };
+                postAppointment("Roland Deschain", 1571569200000)
+                    .catch(done);
+            }
+        )
+    });
+
     describe(`# Test addProvider`, () => {
         afterEach(removeSuperman);
 
