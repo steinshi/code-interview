@@ -157,6 +157,6 @@ For this part, as we said before, assume providers are identified by their name,
   * Understanding when and which service received/published messages on certain channel
   * Performance - How much time each subscriber/publisher worked on each message?
   * Understanding a workflow - If a specific request from the client creates a chain of messages moving from channel to channel, how can we easily tell what the workflow is?
-- Create a wrapper library for the pubsub system. It should be used as a JS client for people who want to use the pubsub system without executing HTTP requests by themselves. It should find an available port, spin up a server to listen on that port and use that port to listen to published messages.
+- Create a wrapper library for the pubsub system. It should be used as a native client ,in the language you chose to implement the code interview with, for people who want to use the pubsub system without executing HTTP requests by themselves. It should find an available port, spin up a server to listen on that port and use that port to listen to published messages.
 
 # Good luck from all of us at Vim!
