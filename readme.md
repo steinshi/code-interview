@@ -48,6 +48,8 @@ We take the **provider's name** as **unique**, which we can differentiate betwee
 **Dates:** The dates (all dates in our system) are formatted as [Milliseconds since epoch](https://currentmillis.com/?now#unix-timestamp) (Which means that a date like this - `31/11/1990 16:30` is written like this - `660061800000` ).
 The dates are inclusive, meaning that if a provider has an availability of `{"from":100, "to":200}` then acceptable dates for an appointment would be: `150`, `100`, `200` but not `99`, `201`. 
 
+**Scores:** The scores are between 0 and 10.0
+
 **Datasource:** For the purpose of this exercise, you will get a Provider list from a .json file and all reading/writing from/to it should be done **in memory**. Design your system in a way that supports millions of Providers, each with thousands of Specialties and AvailableDates, all in memory.
 
 ## Part A
@@ -73,7 +75,7 @@ Use the mock info under `/providers/providers.json` as your data source, but wri
      * **Threshold:** They should only get providers whose scores are matching that threshold <SCORE> (inclusive, if `minScore=9.0` then a provider with score 9.0 should be valid)
      * **Specialty:** They should only get providers that specialize in that specific specialty. Specialty is not case sensitive.
      * **Availability:** They should only get providers that are available in the specific time requested
-     * The providers should be ordered by score
+     * **Ordering:** The providers should be ordered by score from highest to lowest
   * The endpoint should return an array of **provider names** according to the order defined above.
   * If there are no suitable providers the endpoint should return an **empty array**.
   * If the user gave bad parameters, like a missing specialty or a bad date format (should be [milliseconds since epoch](https://currentmillis.com/?now#unix-timestamp)), the server should return a `400 (BAD REQUEST)` code.
@@ -143,7 +145,7 @@ The goal of this part is to support sending/receiving messages to/from the provi
 - Removing providers
 
 These changes are given to you asynchronously using the pubsub system.
-For this part, as we said before, assume providers are identified by their name, there are no duplicates in name. You should support **'upserting'**, which means that if a name doesn't exist - add as new provider, if it does - update it.
+For this part, as we said before, assume providers are identified by their name, there are no duplicates in name. You should support **'upserting'**, which means that if a name doesn't exist - add as new provider, if it does - update it. The update will be a complete update and not a deep one (this means objects and arrays in the provided provider's update will be replaced completely and not updated).
 
 **All the changes for the providers’ info should happen in memory, not on disk. Restarting your server should revert them.**
 1. Whenever a user sets a new appointment using the `POST /appointments` endpoint you wrote in Part A, use the pubsub system to publish a new message to a channel called ‘newAppointments’. The message should contain a payload: `{“name”: string, “date”: date}`
