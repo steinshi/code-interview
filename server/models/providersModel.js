@@ -1,15 +1,46 @@
 const low = require("lowdb");
 const FileSync = require("lowdb/adapters/FileSync");
+const config = require("../config");
 
-const adapter = new FileSync("../DB/providers.json");
-const db = low(adapter);
+const adapter = new FileSync(config.DB_PATH);
+var providersDB = low(adapter);
 
-db.read().then(() => console.log("Content of my_project/db.json is loaded"));
+// Get the providers according to the givven params
+function getProviders(specialty, date, minScore) {
+  return providersDB
+    .get("providers")
+    .filter(
+      provider =>
+        minScore <= provider.score &&
+        provider.availableDates.find(
+          providerAvailableDates =>
+            providerAvailableDates.from <= date &&
+            providerAvailableDates.to >= date
+        ) &&
+        provider.specialties.find(
+          providerSpecialties =>
+            providerSpecialties.toUpperCase() === specialty.toUpperCase()
+        )
+    )
+    .sortBy("score")
+    .value();
+}
 
-// export function getAppointment(minScore, specialties, availableDates) {
-//   let providers = db.get("providers");
-//   providers.filter(provider => provider.score > minScore);
-//   return providers;
-// }
+// get the provider details only if it exist and
+// available in the given time
+function getAvailableProviderByName(name, date) {
+  return providersDB
+    .get("providers")
+    .filter(
+      provider =>
+        provider.name === name &&
+        provider.availableDates.find(
+          providerAvailableDates =>
+            providerAvailableDates.from <= date &&
+            providerAvailableDates.to >= date
+        )
+    )
+    .value();
+}
 
-// export function getAppointment(minScore, specialties, availableDates) {}
+module.exports = { getProviders, getAvailableProviderByName };

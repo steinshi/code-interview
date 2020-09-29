@@ -1,23 +1,28 @@
 const express = require("express");
-// const appointmentsController = require("./api/appointmentsController.js");
 const app = express();
 const config = require("./config");
-const dbq = require("./models/providersModel");
+const appointmentsService = require("./services/appointments");
+var bodyParser = require("body-parser");
 
 const PORT = config.REST_PORT;
 
+app.use(bodyParser.json()); // for parsing application/json
+app.use(bodyParser.urlencoded({ extended: true }));
 app
   .route("/appointments")
   .get(function (req, res) {
-    let a = dbq.getAppointment(
-      req.query.specialty,
-      q.query.date,
-      q.query.minScore
+    const { specialty, date, minScore } = req.query;
+    let { code, providers } = appointmentsService.getAppointment(
+      specialty,
+      date,
+      minScore
     );
-    console.log(req.query);
+    res.status(code).send(providers);
   })
   .post(function (req, res) {
-    console.log("POST " + req.query);
+    const { name, date } = req.body;
+    let code = appointmentsService.setAppointment(name, date);
+    res.status(code).send();
   });
 
 app.listen(PORT, () => {
