@@ -23,9 +23,19 @@ app.get('/appointments', function (req, res) {
 });
  
  app.post('/appointments', function (req, res) {
-  let parms = req.body;
-  console.log(parms);
-  res.send(appointment.setAppointment(parms.name, parms,date));
+  let params = req.body;
+  if (!params.hasOwnProperty("name") || params.name =="") {
+    return res.status(400).send("no name");
+  }
+  if (!params.hasOwnProperty("date") || isNaN(params.date)) {
+    return res.status(400).send("no date");
+  }
+  let set_appointment = appointment.setAppointment(params.name, params.date);
+  if (set_appointment) {
+    return res.send("appointment set");
+  }
+  res.status(400).send();
+  
 });
 
 

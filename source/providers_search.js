@@ -38,13 +38,17 @@ function checkDate(provider, date) {
 }
 
 function appointmentAvailable(name, date){
-    providers.filter((provider=>{
+    let appointment = providers.filter((provider=>{
             if (provider.name == name &&
                 checkDate(provider, date)) {
                 return true;
             }
             return false;
         }));
+    if (appointment.length > 0) {
+        return true;
+    }
+    return false;
 }
 
 module.exports = {searchProviders, appointmentAvailable};
